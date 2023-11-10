@@ -1,0 +1,16 @@
+{
+  "name": "@app/types",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "license": "ISC",
+  "author": "lzdjack <1956252575@qq.com>",
+  "main": "./index.d.ts",
+  "types": "./index.d.ts",
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "build": "pnpm vite build",
+    "clean": "pnpm rimraf .turbo node_modules dist",
+    "lint": "pnpm eslint .",
+    "test": "node ./__tests__/@etfma/shared.test.js"
+  }
+}

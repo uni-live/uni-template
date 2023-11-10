@@ -1,0 +1,41 @@
+{
+  "name": "@app/vite",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "license": "ISC",
+  "author": "lzdjack <1956252575@qq.com>",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "clean": "pnpm rimraf .turbo node_modules dist",
+    "lint": "pnpm eslint .",
+    "stub": "pnpm unbuild --stub"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.1",
+    "chalk": "^5.2.0",
+    "dotenv": "^16.0.3",
+    "fs-extra": "^11.1.1",
+    "picocolors": "^1.0.0",
+    "pkg-types": "^1.0.2",
+    "unplugin-vue-components": "^0.25.1",
+    "vite-plugin-css-injected-by-js": "^3.1.0",
+    "vite-plugin-dts": "^3.3.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

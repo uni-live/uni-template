@@ -1,0 +1,15 @@
+{
+  "name": "@app/ts",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "license": "ISC",
+  "author": "lzdjack <1956252575@qq.com>",
+  "files": [
+    "base.json",
+    "web.json",
+    "node.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

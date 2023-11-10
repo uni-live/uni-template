@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+chmod +x .husky/pre-commit
+
+# pnpm exec lint-staged
