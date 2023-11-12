@@ -5,15 +5,16 @@ import { appendUrlParams, formatRequestDate, joinTimestamp } from './helper';
 import { RequestEnum } from './enum';
 import { ErrorThrow } from './ErrorThrow';
 import { context } from './register';
+import { VLuch } from './luch';
 
 // 设置默认拦截器
-export function defaultInterceptor(opts: RequestConfig) {
+export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
   const requestInterceptors: IRequestInterceptorTuple[] = [
     [
       // 处理请求前的数据
       (config: RequestConfig) => {
         const {
-          apiUrl,
+          baseURL,
           joinPrefix,
           joinParamsToUrl,
           formatDate,
@@ -24,8 +25,8 @@ export function defaultInterceptor(opts: RequestConfig) {
           config.url = `${urlPrefix}${config.url}`;
         }
 
-        if (apiUrl && lodash.isString(apiUrl)) {
-          config.url = `${apiUrl}${config.url}`;
+        if (baseURL && lodash.isString(baseURL)) {
+          config.url = `${baseURL}${config.url}`;
         }
 
         const params = config.params || {};
@@ -112,6 +113,9 @@ export function defaultInterceptor(opts: RequestConfig) {
           info: response,
           type: 'LINK_OK_CODE_ERROR',
         });
+      },
+      (error: Error) => {
+        return Promise.reject(`失败了${error.message}`);
       },
     ],
   ];

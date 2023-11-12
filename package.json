@@ -49,6 +49,9 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@app/ui": "workspace:*",
+    "@app/hooks": "workspace:*",
+    "@app/shared": "workspace:*",
     "@dcloudio/uni-app": "3.0.0-3081220230817001",
     "@dcloudio/uni-app-plus": "3.0.0-3081220230817001",
     "@dcloudio/uni-components": "3.0.0-3081220230817001",

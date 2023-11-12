@@ -1,23 +1,27 @@
-import type { HttpRequestAbstract, HttpRequestConfig, HttpResponse } from "luch-request";
-import Request from "luch-request";
-import { defaultInterceptor } from "./transform";
-import { context } from "./register";
-import { IRequestInterceptorTuple, IResponseInterceptorTuple, RequestConfig, Result } from "./types";
-import { ErrorThrow } from "./ErrorThrow";
+import type { HttpRequestAbstract, HttpRequestConfig, HttpResponse } from 'luch-request';
+import Request from 'luch-request';
+import { defaultInterceptor } from './transform';
+import { context } from './register';
+import {
+  IRequestInterceptorTuple,
+  IResponseInterceptorTuple,
+  RequestConfig,
+  Result,
+} from './types';
+import { ErrorThrow } from './ErrorThrow';
 
-export class VLuch{
+export class VLuch {
   private luchInstance: HttpRequestAbstract;
   private readonly options: HttpRequestConfig;
-  
 
   constructor(options: HttpRequestConfig) {
     this.options = options;
     this.luchInstance = new Request(options);
     this.setupInterceptors();
   }
-  
+
   setupInterceptors() {
-    const { requestInterceptors, responseInterceptors } = defaultInterceptor(this.options);
+    const { requestInterceptors, responseInterceptors } = defaultInterceptor(this.options, this);
 
     this.getRequestInstance(requestInterceptors, responseInterceptors);
 
@@ -30,7 +34,10 @@ export class VLuch{
   ) {
     const requestInterceptorsToEject = requestInterceptors?.map((interceptor) => {
       if (interceptor instanceof Array) {
-        return this.luchInstance.interceptors.request.use(interceptor[0] as any, interceptor[1] as any);
+        return this.luchInstance.interceptors.request.use(
+          interceptor[0] as any,
+          interceptor[1] as any,
+        );
       } else {
         return this.luchInstance.interceptors.request.use(interceptor as any);
       }
@@ -72,7 +79,6 @@ export class VLuch{
     Object.assign(this.luchInstance.config.header || {}, headers);
   }
 
-
   get<T = any>(config: RequestConfig): Promise<T> {
     return this.request({ ...config, method: 'GET' });
   }
@@ -99,7 +105,8 @@ export class VLuch{
     this.luchInstance.interceptors.request.use(undefined, (error) => {
       if (error instanceof ErrorThrow) return Promise.reject(error);
       console.log(`request==============>>>>${error}`);
-      return Promise.reject(
+      return Promise
+        .reject
         // new ErrorThrow({
         //   name: error?.name ?? "Invalid",
         //   message: error?.message,
@@ -107,14 +114,15 @@ export class VLuch{
         //   type: error?.code,
         //   info: error,
         // }),
-      );
+        ();
     });
 
     this.luchInstance.interceptors.response.use(undefined, (error) => {
       if (error instanceof ErrorThrow) return Promise.reject(error);
       console.log(`response==============>>>>${error}`);
-      
-      return Promise.reject(
+
+      return Promise
+        .reject
         // new ErrorThrow({
         //   name: error?.name,
         //   message: error?.message,
@@ -122,7 +130,7 @@ export class VLuch{
         //   type: error?.code,
         //   info: error,
         // }),
-      );
+        ();
     });
 
     return new Promise((resolve, reject) => {
@@ -132,7 +140,7 @@ export class VLuch{
           requestInterceptorsToEject?.forEach((_, index) => {
             this.luchInstance.interceptors.request.eject(index);
           });
-          responseInterceptorsToEject?.forEach((_,index) => {
+          responseInterceptorsToEject?.forEach((_, index) => {
             this.luchInstance.interceptors.response.eject(index);
           });
           resolve(res as unknown as Promise<T>);
@@ -155,5 +163,4 @@ export class VLuch{
         });
     });
   }
-
 }
