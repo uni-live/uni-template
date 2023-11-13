@@ -1,9 +1,8 @@
-import type { HttpData } from 'luch-request';
+import type { HttpData, HttpResponse, HttpError } from 'luch-request';
 import type { IRequestInterceptorTuple, IResponseInterceptorTuple, RequestConfig } from './types';
 import lodash from 'lodash-es';
 import { appendUrlParams, formatRequestDate, joinTimestamp } from './helper';
 import { RequestEnum } from './enum';
-import { ErrorThrow } from './ErrorThrow';
 import { VLuch } from './luch';
 import { LuchRetry } from './luchRetry';
 
@@ -76,14 +75,14 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
 
   const responseInterceptors: IResponseInterceptorTuple[] = [
     [
-      (response: any) => {
+      (response: HttpResponse) => {
         const { custom } = response.config;
 
-        if (custom.isReturnNativeResponse) {
+        if (custom?.isReturnNativeResponse) {
           return response;
         }
 
-        if (!custom.isTransformResponse) {
+        if (!custom?.isTransformResponse) {
           return response.data;
         }
 
@@ -101,22 +100,18 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
           return Reflect.get(data, dataField);
         }
 
-        throw new ErrorThrow({
-          name: 'BizError',
-          code: response.statusCode,
-          message: 'CODE ERROR',
-          result: data,
-          info: response,
-          type: 'LINK_OK_CODE_ERROR',
-        });
+        throw response;
       },
-      (error: any) => {
+      (error: HttpError) => {
+        const config = error.config;
+
         // 添加自动重试机制 保险起见 只针对GET请求
         const retryRequest = new LuchRetry();
-        // const { isOpenRetry } = config.requestOptions.retryRequest;
-        // config.method?.toUpperCase() === RequestEnum.GET &&
-        //   isOpenRetry &&
-        //   retryRequest.retry(luchInstance, error);
+        const { isOpenRetry } = config.custom?.retryRequest;
+
+        config.method?.toUpperCase() === RequestEnum.GET &&
+          isOpenRetry &&
+          retryRequest.retry(luchInstance, error);
         return Promise.reject(error);
       },
     ],

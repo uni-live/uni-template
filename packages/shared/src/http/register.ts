@@ -35,7 +35,7 @@ export let context: IHttpContext = {
     joinTime: true,
     // 重连
     retryRequest: {
-      isOpenRetry: true,
+      isOpenRetry: false,
       count: 5,
       waitTime: 100,
     },

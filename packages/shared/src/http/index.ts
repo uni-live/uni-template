@@ -1,6 +1,5 @@
 export { register, http } from './register';
 export * from './enum';
-export * from './ErrorThrow';
 export * from './luchRetry';
 export type {
   IErrorThrow,

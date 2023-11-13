@@ -8,13 +8,8 @@ import { setupError } from './error';
 export function setupHttp() {
   register({
     custom: {
-      urlPrefix: 'api',
+      // urlPrefix: 'api',
     },
-    requestInterceptors: [
-      (config) => {
-        return config;
-      },
-    ],
     onError: setupError,
   });
 }

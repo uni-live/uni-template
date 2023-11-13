@@ -1,4 +1,4 @@
-import type { HttpRequestAbstract, HttpRequestConfig, HttpResponse } from 'luch-request';
+import type { HttpRequestAbstract, HttpRequestConfig, HttpResponse, HttpError } from 'luch-request';
 import Request from 'luch-request';
 import { defaultInterceptor } from './transform';
 import { context } from './register';
@@ -8,7 +8,6 @@ import {
   RequestConfig,
   Result,
 } from './types';
-import { ErrorThrow } from './ErrorThrow';
 
 export class VLuch {
   private luchInstance: HttpRequestAbstract;
@@ -113,7 +112,7 @@ export class VLuch {
           });
           resolve(res as unknown as Promise<T>);
         })
-        .catch((e: any) => {
+        .catch((e: HttpError) => {
           requestInterceptorsToEject?.forEach((_, index) => {
             this.luchInstance.interceptors.request.eject(index);
           });
@@ -121,24 +120,11 @@ export class VLuch {
             this.luchInstance.interceptors.response.eject(index);
           });
 
-          let error;
-          if (e instanceof ErrorThrow) {
-            error = e;
-          } else {
-            error = new ErrorThrow({
-              name: 'BizError',
-              message: e?.message ?? e,
-              code: e?.response?.status,
-              type: e?.code,
-              info: e,
-            });
-          }
-
           const handler = config?.onError ?? context.onError;
 
-          if (handler) handler(error, opt);
+          if (handler) handler(e, opt);
 
-          reject(error);
+          reject(e);
         });
     });
   }

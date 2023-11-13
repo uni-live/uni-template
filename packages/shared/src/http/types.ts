@@ -26,7 +26,7 @@ export interface UploadFileParams {
 
 type IRequestInterceptorAxios = (config: RequestConfig) => RequestConfig;
 type IRequestInterceptor = IRequestInterceptorAxios;
-type IErrorInterceptor = (error: Error) => Promise<Error>;
+type IErrorInterceptor = (error: HttpError) => Promise<HttpError>;
 type IResponseInterceptor = <T = any>(response: HttpResponse<T>) => HttpResponse<T>;
 export type IRequestInterceptorTuple =
   | [IRequestInterceptor, IErrorInterceptor]
@@ -37,7 +37,7 @@ export type IResponseInterceptorTuple =
   | [IResponseInterceptor]
   | IResponseInterceptor;
 
-type RequestError = HttpError & Error & IErrorThrow;
+type RequestError = HttpError | Error | IErrorThrow;
 
 interface IErrorHandler {
   (error: RequestError, opts: RequestConfig): void;

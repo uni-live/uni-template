@@ -1,7 +1,7 @@
 import { http } from '@app/shared';
 
 enum API {
-  DEMO = '/demo',
+  DEMO = 'https://mock.apifox.com/m2/3578190-0-default/124224247',
 }
 
 /**
@@ -10,8 +10,5 @@ enum API {
 export function getDemoList() {
   return http.get({
     url: API.DEMO,
-    params: {
-      id: 'demo',
-    },
   });
 }
