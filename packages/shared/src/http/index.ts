@@ -1,7 +1,7 @@
-export { register, http } from './register'
-export * from './enum'
-export * from './ErrorThrow'
-export * from './axiosRetry'
+export { register, http } from './register';
+export * from './enum';
+export * from './ErrorThrow';
+export * from './luchRetry';
 export type {
   IErrorThrow,
   IHttpContext,
@@ -10,5 +10,5 @@ export type {
   IRequestInterceptorTuple,
   IResponseInterceptorTuple,
   IResultField,
-  RequestConfig
-} from './types'
+  RequestConfig,
+} from './types';

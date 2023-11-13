@@ -4,8 +4,8 @@ import lodash from 'lodash-es';
 import { appendUrlParams, formatRequestDate, joinTimestamp } from './helper';
 import { RequestEnum } from './enum';
 import { ErrorThrow } from './ErrorThrow';
-import { context } from './register';
 import { VLuch } from './luch';
+import { LuchRetry } from './luchRetry';
 
 // 设置默认拦截器
 export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
@@ -13,14 +13,14 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
     [
       // 处理请求前的数据
       (config: RequestConfig) => {
+        const { baseURL } = config;
         const {
-          baseURL,
           joinPrefix,
           joinParamsToUrl,
           formatDate,
           joinTime = true,
           urlPrefix,
-        } = config;
+        } = config.custom as any;
         if (joinPrefix) {
           config.url = `${urlPrefix}${config.url}`;
         }
@@ -77,45 +77,47 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
   const responseInterceptors: IResponseInterceptorTuple[] = [
     [
       (response: any) => {
-        if (response.config?.isReturnNativeResponse) {
+        const { custom } = response.config;
+
+        if (custom.isReturnNativeResponse) {
           return response;
         }
 
-        if (!response.config?.isTransformResponse) {
+        if (!custom.isTransformResponse) {
           return response.data;
         }
 
         const { data } = response;
 
-        const codeField = context.resultField?.code as string;
-        const dataField = context.resultField?.data as any;
-        const successCode = context.successCode as string | number;
+        const codeField = custom.resultField?.code as string;
+        const dataField = custom.resultField?.data as any;
 
         const hasSuccess =
-          data && Reflect.has(data, codeField) && Reflect.get(data, codeField) === successCode;
+          data &&
+          Reflect.has(data, codeField) &&
+          Reflect.get(data, codeField) === custom.successCode;
 
         if (hasSuccess) {
           return Reflect.get(data, dataField);
         }
-        if (data) {
-          return data;
-        }
-
-        if (response.status === 200) {
-          return data;
-        }
 
         throw new ErrorThrow({
           name: 'BizError',
-          code: response.status,
+          code: response.statusCode,
           message: 'CODE ERROR',
           result: data,
           info: response,
           type: 'LINK_OK_CODE_ERROR',
         });
       },
-      (error: Error) => {
-        return Promise.reject(`失败了${error.message}`);
+      (error: any) => {
+        // 添加自动重试机制 保险起见 只针对GET请求
+        const retryRequest = new LuchRetry();
+        // const { isOpenRetry } = config.requestOptions.retryRequest;
+        // config.method?.toUpperCase() === RequestEnum.GET &&
+        //   isOpenRetry &&
+        //   retryRequest.retry(luchInstance, error);
+        return Promise.reject(error);
       },
     ],
   ];

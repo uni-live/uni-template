@@ -1,19 +1,23 @@
-import { type IErrorThrow } from './types'
+import { type IErrorThrow } from './types';
 
 export class ErrorThrow {
-  public message: string
-  public name: string
-  public code: string | number
-  public type: string
-  public result?: any
-  public info?: any
+  public message: string;
+  public name: string;
+  public code: string | number;
+  public type: string;
+  public result?: any;
+  public info?: any;
 
   constructor(opts: IErrorThrow) {
-    this.message = opts.message
-    this.name = opts.name
-    this.code = opts.code
-    this.type = opts.type
-    this.result = opts.result
-    this.info = opts.info
+    this.message = opts.message;
+    this.name = opts.name;
+    this.code = opts.code;
+    this.type = opts.type;
+    this.result = opts.result;
+    this.info = opts.info;
+  }
+
+  toString() {
+    return `${this.name} ${this.code}: ${this.message}`;
   }
 }

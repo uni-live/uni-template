@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "vue.volar",
     "vue.vscode-typescript-vue-plugin",
     "uni-helper.uni-app-schemas-vscode",
     "uni-helper.uni-app-snippets-vscode",
@@ -14,6 +13,15 @@
     "aaron-bond.better-comments",
     "mrmlnc.vscode-scss",
     "esbenp.prettier-vscode",
-    "xabikos.javascriptsnippets"
+    "xabikos.javascriptsnippets",
+    "pkief.material-icon-theme",
+    "zhuangtongfa.material-theme",
+    "stylelint.vscode-stylelint",
+    "antfu.vite",
+    "hollowtree.vue-snippets",
+    "mikestead.dotenv",
+    "dbaeumer.vscode-eslint",
+    "mhutchie.git-graph",
+    "eamodio.gitlens"
   ]
 }

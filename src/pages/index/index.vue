@@ -1,16 +1,19 @@
 <template>
   <view class="content">
-    <image class="logo" src="/static/logo.png" />
     <view class="text-area">
-      <text class="title">{{ title }}</text>
+      <button hover-class="button-hover" @click="handleClick">测试</button>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { getDemoList } from '@/api';
 
-  const title = ref('Hello');
+  async function handleClick() {
+    const data = await getDemoList();
+
+    console.log('================>>>', data);
+  }
 </script>
 
 <style>

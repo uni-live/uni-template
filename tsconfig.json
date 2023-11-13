@@ -1,4 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@app/ts/web.json"
+  "extends": "@app/ts/web.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "mock", "vite.config.ts", "package.json"]
 }

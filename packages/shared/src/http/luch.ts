@@ -12,11 +12,12 @@ import { ErrorThrow } from './ErrorThrow';
 
 export class VLuch {
   private luchInstance: HttpRequestAbstract;
-  private readonly options: HttpRequestConfig;
+  private readonly options: RequestConfig;
 
-  constructor(options: HttpRequestConfig) {
+  constructor(options: RequestConfig) {
     this.options = options;
     this.luchInstance = new Request(options);
+
     this.setupInterceptors();
   }
 
@@ -34,10 +35,7 @@ export class VLuch {
   ) {
     const requestInterceptorsToEject = requestInterceptors?.map((interceptor) => {
       if (interceptor instanceof Array) {
-        return this.luchInstance.interceptors.request.use(
-          interceptor[0] as any,
-          interceptor[1] as any,
-        );
+        return this.luchInstance.interceptors.request.use(interceptor[0], interceptor[1] as any);
       } else {
         return this.luchInstance.interceptors.request.use(interceptor as any);
       }
@@ -97,41 +95,11 @@ export class VLuch {
 
   request<T = any>(config: RequestConfig): Promise<T> {
     const opt: RequestConfig = Object.assign({}, this.options, config);
+
     const { requestInterceptorsToEject, responseInterceptorsToEject } = this.getRequestInstance(
       config?.requestInterceptors ?? [],
       config?.responseInterceptors ?? [],
     );
-
-    this.luchInstance.interceptors.request.use(undefined, (error) => {
-      if (error instanceof ErrorThrow) return Promise.reject(error);
-      console.log(`request==============>>>>${error}`);
-      return Promise
-        .reject
-        // new ErrorThrow({
-        //   name: error?.name ?? "Invalid",
-        //   message: error?.message,
-        //   code: error?.request?.status,
-        //   type: error?.code,
-        //   info: error,
-        // }),
-        ();
-    });
-
-    this.luchInstance.interceptors.response.use(undefined, (error) => {
-      if (error instanceof ErrorThrow) return Promise.reject(error);
-      console.log(`response==============>>>>${error}`);
-
-      return Promise
-        .reject
-        // new ErrorThrow({
-        //   name: error?.name,
-        //   message: error?.message,
-        //   code: error?.response?.status,
-        //   type: error?.code,
-        //   info: error,
-        // }),
-        ();
-    });
 
     return new Promise((resolve, reject) => {
       this.luchInstance
@@ -153,13 +121,24 @@ export class VLuch {
             this.luchInstance.interceptors.response.eject(index);
           });
 
-          try {
-            const handler = config?.onError ?? context.onError;
-            if (handler) handler(e, opt);
-          } catch (e) {
-            reject(e);
+          let error;
+          if (e instanceof ErrorThrow) {
+            error = e;
+          } else {
+            error = new ErrorThrow({
+              name: 'BizError',
+              message: e?.message ?? e,
+              code: e?.response?.status,
+              type: e?.code,
+              info: e,
+            });
           }
-          reject(e);
+
+          const handler = config?.onError ?? context.onError;
+
+          if (handler) handler(error, opt);
+
+          reject(error);
         });
     });
   }

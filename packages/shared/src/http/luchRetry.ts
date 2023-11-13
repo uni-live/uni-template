@@ -5,7 +5,7 @@ import { VLuch } from './luch';
  *  请求重试机制
  */
 
-export class AxiosRetry {
+export class LuchRetry {
   /**
    * 重试
    */
