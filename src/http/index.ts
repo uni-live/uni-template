@@ -7,9 +7,6 @@ import { setupError } from './error';
  */
 export function setupHttp() {
   register({
-    custom: {
-      // urlPrefix: 'api',
-    },
     onError: setupError,
   });
 }

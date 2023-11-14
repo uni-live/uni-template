@@ -1,7 +1,7 @@
 import { VLuch } from './luch';
 import { ContentTypeEnum } from './enum';
 import type { IHttpContext } from './types';
-import lodash from 'lodash-es';
+import { merge } from 'lodash-es';
 
 export let context: IHttpContext = {
   // 响应的过期时间
@@ -45,7 +45,7 @@ export let context: IHttpContext = {
 export let http: VLuch;
 
 export async function register(opts?: IHttpContext) {
-  context = lodash.merge(context, opts);
+  context = merge(context, opts);
 
   http = new VLuch(context);
 

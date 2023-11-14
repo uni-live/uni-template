@@ -1,5 +1,10 @@
 import type { HttpData, HttpResponse, HttpError } from 'luch-request';
-import type { IRequestInterceptorTuple, IResponseInterceptorTuple, RequestConfig } from './types';
+import type {
+  CustomHandler,
+  IRequestInterceptorTuple,
+  IResponseInterceptorTuple,
+  RequestConfig,
+} from './types';
 import lodash from 'lodash-es';
 import { appendUrlParams, formatRequestDate, joinTimestamp } from './helper';
 import { RequestEnum } from './enum';
@@ -7,7 +12,7 @@ import { VLuch } from './luch';
 import { LuchRetry } from './luchRetry';
 
 // 设置默认拦截器
-export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
+export function defaultInterceptor(_: RequestConfig, luchInstance: VLuch) {
   const requestInterceptors: IRequestInterceptorTuple[] = [
     [
       // 处理请求前的数据
@@ -19,7 +24,7 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
           formatDate,
           joinTime = true,
           urlPrefix,
-        } = config.custom as any;
+        } = config.custom!;
         if (joinPrefix) {
           config.url = `${urlPrefix}${config.url}`;
         }
@@ -57,7 +62,7 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
             }
             if (joinParamsToUrl) {
               config.url = appendUrlParams(
-                config.url as string,
+                config.url!,
                 Object.assign({}, config.params, config.data),
               );
             }
@@ -76,7 +81,7 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
   const responseInterceptors: IResponseInterceptorTuple[] = [
     [
       (response: HttpResponse) => {
-        const { custom } = response.config;
+        const custom = response.config.custom as CustomHandler;
 
         if (custom?.isReturnNativeResponse) {
           return response;
@@ -88,8 +93,8 @@ export function defaultInterceptor(opts: RequestConfig, luchInstance: VLuch) {
 
         const { data } = response;
 
-        const codeField = custom.resultField?.code as string;
-        const dataField = custom.resultField?.data as any;
+        const codeField = custom.resultField?.code!;
+        const dataField = custom.resultField?.data!;
 
         const hasSuccess =
           data &&
