@@ -10,7 +10,6 @@ export function setupHttp() {
   const { VITE_GLOB_API_URL_PREFIX, VITE_GLOB_API_URL } = getAppEnvConfig();
 
   register({
-<<<<<<< HEAD
     baseURL: VITE_GLOB_API_URL,
     custom: {
       urlPrefix: VITE_GLOB_API_URL_PREFIX,
@@ -22,8 +21,6 @@ export function setupHttp() {
         return config;
       },
     ],
-=======
->>>>>>> 5689112a50da1de13542c37e7f0618cddb64620d
     onError: setupError,
   });
 }
