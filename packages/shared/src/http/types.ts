@@ -1,4 +1,4 @@
-import type { HttpError, HttpRequestConfig, HttpResponse } from 'luch-request';
+import type { HttpCustom, HttpError, HttpRequestConfig, HttpResponse } from 'luch-request';
 
 export type Recordable<T> = Record<string, T>;
 
@@ -37,7 +37,7 @@ export type IResponseInterceptorTuple =
   | [IResponseInterceptor]
   | IResponseInterceptor;
 
-type RequestError = HttpError | Error | IErrorThrow;
+type RequestError = HttpError | Error;
 
 interface IErrorHandler {
   (error: RequestError, opts: RequestConfig): void;
@@ -50,37 +50,29 @@ export interface IResultField {
 }
 
 export interface RequestConfig extends HttpRequestConfig {
-  custom?: {
-    resultField?: IResultField;
-    successCode?: number | string;
-    // Splicing request parameters to url
-    joinParamsToUrl?: boolean;
-    // Format request parameter time
-    formatDate?: boolean;
-    // Whether to process the request result
-    isTransformResponse?: boolean;
-    // Whether to return native response headers
-    // For example: use this attribute when you need to get the response headers
-    isReturnNativeResponse?: boolean;
-    // Whether to join url
-    joinPrefix?: boolean;
-
-    // 请求拼接路径
-    urlPrefix?: string;
-    // Whether to add a timestamp
-    joinTime?: boolean;
-    [key: string]: any;
-  };
+  custom?: CustomHandler;
   onError?: IErrorHandler;
   requestInterceptors?: IRequestInterceptorTuple[];
   responseInterceptors?: IResponseInterceptorTuple[];
 }
 
-export interface IErrorThrow {
-  message: string;
-  name: string;
-  code: string | number;
-  type: string;
-  result?: any;
-  info?: any;
+export interface CustomHandler extends HttpCustom {
+  resultField?: IResultField;
+  successCode?: number | string;
+  // Splicing request parameters to url
+  joinParamsToUrl?: boolean;
+  // Format request parameter time
+  formatDate?: boolean;
+  // Whether to process the request result
+  isTransformResponse?: boolean;
+  // Whether to return native response headers
+  // For example: use this attribute when you need to get the response headers
+  isReturnNativeResponse?: boolean;
+  // Whether to join url
+  joinPrefix?: boolean;
+
+  // 请求拼接路径
+  urlPrefix?: string;
+  // Whether to add a timestamp
+  joinTime?: boolean;
 }

@@ -1,5 +1,6 @@
-import type { HttpRequestAbstract, HttpRequestConfig, HttpResponse, HttpError } from 'luch-request';
+import type { HttpRequestAbstract, HttpResponse, HttpError } from 'luch-request';
 import Request from 'luch-request';
+import { merge } from 'lodash-es';
 import { defaultInterceptor } from './transform';
 import { context } from './register';
 import {
@@ -7,7 +8,9 @@ import {
   IResponseInterceptorTuple,
   RequestConfig,
   Result,
+  UploadFileParams,
 } from './types';
+import { ContentTypeEnum } from './enum';
 
 export class VLuch {
   private luchInstance: HttpRequestAbstract;
@@ -54,15 +57,17 @@ export class VLuch {
     };
   }
 
-  private createLuch(config: HttpRequestConfig): void {
-    this.luchInstance = new Request(config);
+  private createLuch(c: RequestConfig): void {
+    this.luchInstance.setConfig((config) => {
+      return merge(config, c);
+    });
   }
 
-  getAxios(): HttpRequestAbstract {
+  getLuch(): HttpRequestAbstract {
     return this.luchInstance;
   }
 
-  configAxios(config: HttpRequestConfig) {
+  configLuch(config: RequestConfig) {
     if (!this.luchInstance) {
       return;
     }
@@ -90,6 +95,53 @@ export class VLuch {
 
   delete<T = any>(config: RequestConfig): Promise<T> {
     return this.request({ ...config, method: 'DELETE' });
+  }
+
+  /**
+   * @description:  File Upload
+   */
+  uploadFile<T = any>(config: RequestConfig, params: UploadFileParams) {
+    const formData = new FormData();
+    const customFilename = params.name || 'file';
+
+    if (params.filename) {
+      formData.append(customFilename, params.file, params.filename);
+    } else {
+      formData.append(customFilename, params.file);
+    }
+
+    if (params.data) {
+      Object.keys(params.data).forEach((key) => {
+        const value = params.data![key];
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            formData.append(`${key}[]`, item);
+          });
+          return;
+        }
+
+        formData.append(key, params.data![key]);
+      });
+    }
+
+    return this.luchInstance.middleware<T>({
+      ...config,
+      method: 'UPLOAD',
+      data: formData,
+      header: {
+        'Content-type': ContentTypeEnum.FORM_DATA,
+      },
+    });
+  }
+
+  /**
+   * @description:  File Upload
+   */
+  downloadFile<T = any>(config: RequestConfig) {
+    return this.luchInstance.middleware<T>({
+      ...config,
+      method: 'DOWNLOAD',
+    });
   }
 
   request<T = any>(config: RequestConfig): Promise<T> {
