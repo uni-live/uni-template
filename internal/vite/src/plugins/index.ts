@@ -1,6 +1,4 @@
-// @ts-nocheck
 import type { PluginOption } from 'vite';
-import { configMockPlugin } from './mock';
 import uni from '@dcloudio/vite-plugin-uni';
 
 interface Options {
@@ -8,13 +6,10 @@ interface Options {
   enableMock?: boolean;
 }
 
-async function createPlugins({ isBuild, enableMock }: Options) {
+async function createPlugins({ isBuild }: Options) {
   const vitePlugins: (PluginOption | PluginOption[])[] = [];
 
   vitePlugins.push(uni());
-
-  // vite-plugin-mock
-  vitePlugins.push(configMockPlugin({ enable: !!enableMock, isBuild }));
 
   return vitePlugins;
 }

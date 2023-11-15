@@ -14,11 +14,10 @@ export function defineApplicationConfig(defineOptions: DefineOptions = {}) {
   return defineConfig(async ({ command, mode }) => {
     const root = process.cwd();
     const isBuild = command === 'build';
-    const { VITE_USE_MOCK } = loadEnv(mode, root);
+    const env = loadEnv(mode, root);
 
     const plugins = await createPlugins({
       isBuild,
-      enableMock: VITE_USE_MOCK === 'true',
     });
 
     const pathResolve = (pathname: string) => resolve(root, '.', pathname);
